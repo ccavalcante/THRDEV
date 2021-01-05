@@ -1,0 +1,242 @@
+unit udmVendas;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, Data.Win.ADODB, Data.DB, Datasnap.DBClient,
+  Datasnap.Provider, uAbstractVendas,System.DateUtils;
+
+type
+  TdmVendas = class(TDataModule)
+    dsPesquisar: TADODataSet;
+    dspPesquisar: TDataSetProvider;
+    cdsPesquisar: TClientDataSet;
+    qrVendas: TADOQuery;
+    qrExcluirVenda: TADOQuery;
+    qrVendasItens: TADOQuery;
+    qrExcluirItens: TADOQuery;
+    cdsItens: TClientDataSet;
+    cdsItensCodigo: TIntegerField;
+    cdsItensDescricao: TStringField;
+    cdsItensQuantidade: TStringField;
+    cdsItensValor: TStringField;
+    cdsItensValorTotal: TStringField;
+    qrRelatorio: TADOQuery;
+    dspRelatorio: TDataSetProvider;
+    cdsRelatorio: TClientDataSet;
+    dsPesquisarIDVENDAS: TIntegerField;
+    dsPesquisarQUANTIDADE: TBCDField;
+    dsPesquisarVALORTOTAL: TFloatField;
+    dsPesquisarDATAVENDA: TDateField;
+    cdsPesquisarIDVENDAS: TIntegerField;
+    cdsPesquisarQUANTIDADE: TBCDField;
+    cdsPesquisarVALORTOTAL: TFloatField;
+    cdsPesquisarDATAVENDA: TDateField;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    procedure CarregarCliente(iVendas: TAbstractVendas; iDCliente: Integer);
+    procedure CarregarProduto(iVendas: TAbstractVendas; iDProduto: Integer);
+    procedure carregarRelatorio(iVendas: TAbstractVendas; IDVendas: Integer);
+    procedure PesquisarVendas(iCodigo: Integer; iData: TDate);
+    function InserirVendas(iVendas: TAbstractVendas; out sErro: string): Boolean;
+    function ExcluirVendas(iCodigo: Integer; out sErro: String): Boolean;
+    function InserirItensVenda(iVendas: TAbstractVendas; out sErro: String): Boolean;
+
+
+  end;
+
+var
+  dmVendas: TdmVendas;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+uses uDmConexao;
+
+{$R *.dfm}
+
+{ TdmVendas }
+
+
+function TdmVendas.ExcluirVendas(iCodigo: Integer; out sErro: String): Boolean;
+begin
+   with qrExcluirVenda do
+  begin
+    Sql.Clear;
+    Sql.Add('delete from Venda');
+    Sql.Add('where (IDVenda = :IDVenda) ');
+
+    parameters[0].Value := iCodigo;
+    try
+      ExecSQL();
+      Result := True;
+      except on E: Exception do
+      begin
+        sErro := 'Ocorreu um erro ao excluir a venda selecionada!' + sLineBreak + E.Message;
+        Result := False;
+      end;
+    end;
+  end;
+end;
+
+function TdmVendas.InserirItensVenda(iVendas: TAbstractVendas;
+  out sErro: String): Boolean;
+var
+  sqlID: TADODataSet;
+begin
+  sqlID := TADODataSet.Create(nil);
+  try
+    with sqlID do
+    begin
+      Connection := dmConexao.sqlConexao;
+      CommandText := 'SELECT MAX(IDVENDAS) FROM VENDAS';
+      open;
+
+      iVendas.ID := FieldByname('MAX(IDVENDAS)').AsInteger;
+    end;
+  finally
+    freeAndNil(sqlID);
+  end;
+  with qrVendasItens do
+  begin
+    parameters.ParamByName('pIDVENDAS').Value := iVENDAS.ID;
+    parameters.ParamByName('pIDPRODUTOS').Value := iVendas.IDProduto;
+    parameters.ParamByName('pDESCRICAO').Value  := iVendas.Descricao;
+    parameters.ParamByName('pQUANTIDADE').Value := iVENDAS.Quantidade;
+    parameters.ParamByName('pVALORTOTAL').Value := iVendas.ValorTotal;
+    parameters.ParamByName('pDATAVENDA').Value  := Date;
+
+    if cdsItens.Active then
+      cdsItens.Open;
+    cdsItens.Insert;
+    cdsItens.FieldByName('Codigo').AsInteger := iVendas.IDProduto;
+    cdsItens.FieldByName('Descricao').AsString := iVendas.Descricao;
+    cdsItens.FieldByName('Quantidade').AsString := iVendas.Quantidade;
+    cdsItens.FieldByName('Valor').AsString  := iVendas.Valor;
+    cdsItens.FieldByName('ValorTotal').AsString := iVendas.ValorTotal;
+    cdsItens.Next;
+
+    try
+      execSQL;
+      Result := True;
+      Except on E: Exception do
+      begin
+        sErro := 'Ocorreu erro ao gravar os itens da venda!' + sLineBreak + E.Message;
+        Result := False;
+      end;
+
+    end;
+
+  end;
+  
+end;
+
+function TdmVendas.InserirVendas(iVendas: TAbstractVendas;
+  out sErro: string): Boolean;
+begin
+
+  with qrVendas do
+  begin
+    parameters.ParamByName('pIDCLIENTES').Value := iVendas.IDCliente;
+    parameters.ParamByName('pDATAVENDA').Value := Date;
+    try
+      execSQL;
+      Result := True;
+      except
+      on E: Exception do
+      begin
+        sErro := 'Ocorreu um erro ao gravar a venda!' + sLineBreak + E.Message;
+        Result := False;
+      end;
+
+    end;
+  end;
+end;
+
+procedure TdmVendas.CarregarCliente(iVendas: TAbstractVendas; iDCliente: Integer);
+var
+  sqlCliente: TADODATASET;
+begin
+  sqlCliente := TADODATASET.Create(nil);
+  try
+    with sqlCliente do
+    begin
+      Connection := dmConexao.sqlConexao;
+      commandText := 'select IDCLIENTE, NOME from Clientes where (IDCLIENTE = ' + IntToStr(iDCliente) + ')';
+      open;
+
+      iVendas.IDCliente := FieldByname('IDCLIENTE').AsInteger;
+      iVendas.Nome  := FieldByname('NOME').AsString;
+    end;
+  finally
+    freeAndNil(sqlCliente);
+  end;
+
+end;
+
+procedure TdmVendas.CarregarProduto(iVendas: TAbstractVendas;
+  iDProduto: Integer);
+var
+  sqlProduto: TADODATASET;
+begin
+  sqlProduto := TADODATASET.Create(nil);
+  try
+    with sqlProduto do
+    begin
+      Connection := dmConexao.sqlConexao;
+      CommandText := 'select IDPRODUTOS, DESCRICAO, VALOR FROM Produtos where (IDPRODUTOS = ' + IntToStr(iDProduto) + ')';
+      open;
+
+      iVendas.IDProduto := FieldByName('IDPRODUTOS').AsInteger;
+      iVendas.Descricao := FieldByName('DESCRICAO').AsString;
+      iVendas.Valor := FieldByName('VALOR').AsString;
+    end;
+  finally
+    FreeAndNil(sqlProduto);
+  end;
+end;
+
+
+
+procedure TdmVendas.carregarRelatorio(iVendas: TAbstractVendas;
+  IDVendas: Integer);
+var
+  sqlID: TADODataSet;
+begin
+  sqlID := TADODataSet.Create(nil);
+  try
+    with sqlID do
+    begin
+      Connection := dmConexao.sqlConexao;
+      CommandText := 'SELECT MAX(IDVENDAS) FROM VENDAS';
+      open;
+
+      iVendas.ID := FieldByname('MAX(IDVENDAS)').AsInteger;
+    end;
+  finally
+    freeAndNil(sqlID);
+  end;
+  if cdsRelatorio.Active then
+    cdsRelatorio.Close;
+  cdsRelatorio.ParamByName('pIDVENDAS').AsInteger := iVendas.ID;
+  cdsRelatorio.Open;
+  cdsRelatorio.First;
+
+end;
+
+procedure TdmVendas.PesquisarVendas(iCodigo: Integer; iData: TDATE);
+begin
+
+  if cdsPesquisar.Active then
+    cdsPesquisar.Close;
+  cdsPesquisar.ParamByName('pIDVENDAS').AsInteger :=  iCodigo;
+  cdsPesquisar.ParamByName('pDATAVENDA').AsDate := iDATA;
+  cdsPesquisar.Open;
+  cdsPesquisar.First;
+
+end;
+
+end.

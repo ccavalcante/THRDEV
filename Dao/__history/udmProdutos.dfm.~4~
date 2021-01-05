@@ -1,0 +1,155 @@
+object dmProdutos: TdmProdutos
+  OldCreateOrder = False
+  Height = 169
+  Width = 338
+  object qrProdutosInsert: TADOQuery
+    Connection = dmConexao.sqlConexao
+    Parameters = <
+      item
+        Name = 'pIDPRODUTOS'
+        DataType = ftInteger
+        NumericScale = 250
+        Precision = 250
+        Size = 510
+        Value = Null
+      end
+      item
+        Name = 'pDESCRICAO'
+        DataType = ftString
+        NumericScale = 250
+        Precision = 250
+        Size = 510
+        Value = Null
+      end
+      item
+        Name = 'pQUANTIDADE'
+        DataType = ftString
+        NumericScale = 250
+        Precision = 250
+        Size = 510
+        Value = Null
+      end
+      item
+        Name = 'pVALOR'
+        DataType = ftString
+        NumericScale = 250
+        Precision = 250
+        Size = 510
+        Value = Null
+      end>
+    SQL.Strings = (
+      'insert into Produtos '
+      '(IDPRODUTOS, DESCRICAO, QUANTIDADE, VALOR'
+      ') VALUES  ('
+      ':pIDPRODUTOS, :pDESCRICAO, :pQUANTIDADE, :pVALOR)'
+      '')
+    Left = 96
+    Top = 16
+  end
+  object dsPesquisar: TADODataSet
+    Connection = dmConexao.sqlConexao
+    CursorType = ctStatic
+    CommandText = 
+      'select IDPRODUTOS, DESCRICAO, QUANTIDADE, VALOR from produtos'#13#10'w' +
+      'here (DESCRICAO like :pDESCRICAO)'
+    Parameters = <
+      item
+        Name = 'pDESCRICAO'
+        DataType = ftString
+        NumericScale = 210
+        Precision = 210
+        Size = 510
+        Value = Null
+      end>
+    Left = 24
+    Top = 16
+  end
+  object dspPesquisar: TDataSetProvider
+    DataSet = dsPesquisar
+    Left = 24
+    Top = 64
+  end
+  object cdsPesquisar: TClientDataSet
+    Aggregates = <>
+    Params = <
+      item
+        DataType = ftString
+        Precision = 210
+        NumericScale = 210
+        Name = 'pDESCRICAO'
+        ParamType = ptUnknown
+        Size = 510
+      end>
+    ProviderName = 'dspPesquisar'
+    Left = 24
+    Top = 120
+    object cdsPesquisarIDPRODUTOS: TAutoIncField
+      FieldName = 'IDPRODUTOS'
+      ReadOnly = True
+    end
+    object cdsPesquisarDESCRICAO: TStringField
+      FieldName = 'DESCRICAO'
+      Size = 60
+    end
+    object cdsPesquisarQUANTIDADE: TBCDField
+      FieldName = 'QUANTIDADE'
+      Precision = 10
+      Size = 0
+    end
+    object cdsPesquisarVALOR: TBCDField
+      FieldName = 'VALOR'
+      Precision = 10
+      Size = 0
+    end
+  end
+  object qrProdExcluir: TADOQuery
+    Connection = dmConexao.sqlConexao
+    Parameters = <>
+    Left = 176
+    Top = 16
+  end
+  object qrProdUpdate: TADOQuery
+    Connection = dmConexao.sqlConexao
+    Parameters = <
+      item
+        Name = 'DESCRICAO'
+        DataType = ftString
+        NumericScale = 250
+        Precision = 250
+        Size = 510
+        Value = Null
+      end
+      item
+        Name = 'QUANTIDADE'
+        DataType = ftString
+        NumericScale = 250
+        Precision = 250
+        Size = 510
+        Value = Null
+      end
+      item
+        Name = 'VALOR'
+        DataType = ftString
+        NumericScale = 250
+        Precision = 250
+        Size = 510
+        Value = Null
+      end
+      item
+        Name = 'IDPRODUTOS'
+        DataType = ftInteger
+        NumericScale = 250
+        Precision = 250
+        Size = 510
+        Value = Null
+      end>
+    SQL.Strings = (
+      'update Produtos '
+      '            set DESCRICAO = :DESCRICAO,'
+      '           QUANTIDADE = :QUANTIDADE,'
+      '           VALOR = :VALOR,'
+      '           where (IDPRODUTOS = :IDPRODUTOS)')
+    Left = 248
+    Top = 16
+  end
+end

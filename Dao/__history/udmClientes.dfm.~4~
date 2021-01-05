@@ -1,0 +1,92 @@
+object dmClientes: TdmClientes
+  OldCreateOrder = False
+  Height = 150
+  Width = 215
+  object qrCliente: TADOQuery
+    Connection = dmConexao.sqlConnection
+    Parameters = <
+      item
+        Name = 'pIDCLIENTE'
+        DataType = ftInteger
+        NumericScale = 250
+        Precision = 250
+        Size = 510
+        Value = Null
+      end
+      item
+        Name = 'pNOME'
+        DataType = ftString
+        NumericScale = 250
+        Precision = 250
+        Size = 510
+        Value = Null
+      end
+      item
+        Name = 'pDOCUMENTO'
+        DataType = ftString
+        NumericScale = 250
+        Precision = 250
+        Size = 510
+        Value = Null
+      end
+      item
+        Name = 'pDOCUMENTO2'
+        DataType = ftString
+        NumericScale = 250
+        Precision = 250
+        Size = 510
+        Value = Null
+      end
+      item
+        Name = 'pTELEFONE'
+        DataType = ftString
+        NumericScale = 250
+        Precision = 250
+        Size = 510
+        Value = Null
+      end
+      item
+        Name = 'pCELULAR'
+        DataType = ftString
+        NumericScale = 250
+        Precision = 250
+        Size = 510
+        Value = Null
+      end
+      item
+        Name = 'pEMAIL'
+        DataType = ftString
+        NumericScale = 250
+        Precision = 250
+        Size = 510
+        Value = Null
+      end
+      item
+        Name = 'pNOMEMAE'
+        DataType = ftString
+        NumericScale = 250
+        Precision = 250
+        Size = 510
+        Value = Null
+      end
+      item
+        Name = 'pNOMEPAI'
+        DataType = ftString
+        NumericScale = 250
+        Precision = 250
+        Size = 510
+        Value = Null
+      end>
+    SQL.Strings = (
+      'insert into clientes '
+      
+        '(IDCLIENTE, NOME, DOCUMENTO, DOCUMENTO2, TELEFONE, CELULAR, EMAI' +
+        'L, NOMEMAE, NOMEPAI'
+      ') VALUES  ('
+      
+        ':pIDCLIENTE, :pNOME, :pDOCUMENTO, :pDOCUMENTO2, :pTELEFONE, :pCE' +
+        'LULAR, :pEMAIL, :pNOMEMAE, :pNOMEPAI)')
+    Left = 64
+    Top = 48
+  end
+end

@@ -1,0 +1,41 @@
+object dmProdutos: TdmProdutos
+  OldCreateOrder = False
+  Height = 169
+  Width = 338
+  object qrProdutosInsert: TADOQuery
+    Connection = dmConexao.sqlConexao
+    Parameters = <>
+    Left = 96
+    Top = 16
+  end
+  object dsPesquisar: TADODataSet
+    Connection = dmConexao.sqlConexao
+    Parameters = <>
+    Left = 24
+    Top = 16
+  end
+  object dspPesquisar: TDataSetProvider
+    DataSet = dsPesquisar
+    Left = 24
+    Top = 64
+  end
+  object cdsPesquisar: TClientDataSet
+    Aggregates = <>
+    Params = <>
+    ProviderName = 'dspPesquisar'
+    Left = 24
+    Top = 120
+  end
+  object qrProdExcluir: TADOQuery
+    Connection = dmConexao.sqlConexao
+    Parameters = <>
+    Left = 176
+    Top = 16
+  end
+  object qrProdUpdate: TADOQuery
+    Connection = dmConexao.sqlConexao
+    Parameters = <>
+    Left = 248
+    Top = 16
+  end
+end

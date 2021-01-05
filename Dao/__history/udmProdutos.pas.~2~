@@ -1,0 +1,34 @@
+unit udmProdutos;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, Datasnap.DBClient, Datasnap.Provider,
+  Data.Win.ADODB, Data.DB;
+
+type
+  TdmProdutos = class(TDataModule)
+    qrProdutosInsert: TADOQuery;
+    dsPesquisar: TADODataSet;
+    dspPesquisar: TDataSetProvider;
+    cdsPesquisar: TClientDataSet;
+    qrProdExcluir: TADOQuery;
+    qrProdUpdate: TADOQuery;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  dmProdutos: TdmProdutos;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+uses uDmConexao;
+
+{$R *.dfm}
+
+end.

@@ -1,0 +1,13 @@
+object dmConexao: TdmConexao
+  OldCreateOrder = False
+  Height = 150
+  Width = 215
+  object sqlConnection: TADOConnection
+    ConnectionString = 
+      'Provider=MSDASQL.1;Persist Security Info=False;User ID=root;Data' +
+      ' Source=MySQL ODBC Connector Datasource1;Initial Catalog=thrdev'
+    Provider = 'MSDASQL.1'
+    Left = 64
+    Top = 64
+  end
+end

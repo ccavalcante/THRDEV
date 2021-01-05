@@ -1,0 +1,222 @@
+unit udmClientes;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, Data.DB, Data.Win.ADODB,uDmConexao,
+  uCliente, Datasnap.DBClient, Datasnap.Provider, Data.FMTBcd, Data.SqlExpr;
+
+type
+  TdmClientes = class(TDataModule)
+    qrCliente: TADOQuery;
+    dstPesquisa: TADODataSet;
+    dspPesquisar: TDataSetProvider;
+    cdsPesquisar: TClientDataSet;
+    cdsPesquisarIDCLIENTE: TAutoIncField;
+    cdsPesquisarNOME: TStringField;
+    cdsPesquisarDOCUMENTO: TStringField;
+    cdsPesquisarDOCUMENTO2: TStringField;
+    cdsPesquisarTELEFONE: TStringField;
+    cdsPesquisarCELULAR: TStringField;
+    cdsPesquisarEMAIL: TStringField;
+  private
+    
+    { Private declarations }
+  public
+    { Public declarations }
+    procedure PesquisarCliente(iNome: String);
+    procedure CarregarClientePesquisa(iCliente: TClienteAbstract; iCodigo: Integer);
+    function CarregarCliente(iCliente: TClienteAbstract): Boolean;
+    function InserirRegistoCliente(iCliente: TClienteAbstract; out sErro: String): Boolean;
+    function AlterarCliente(iCliente: TClienteAbstract; out sErro: String): Boolean;
+    function ExcluirCliente(iCodigo: Integer; out sErro: String): Boolean;
+
+  end;
+
+var
+  dmClientes: TdmClientes;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+{ TdmClientes }
+
+function TdmClientes.AlterarCliente(iCliente: TClienteAbstract;
+  out sErro: String): Boolean;
+begin
+  with qrCliente do
+  begin
+    SQL.Clear;
+    SQL.Clear;
+    SQL.Add('update clientes' +
+            'set Nome = :Nome,' +
+            'Documento = :Documento,' +
+            'Documento2 = :Documento2,' +
+            'Telefone = :Telefone,' +
+            'Celular = :Celular,' +
+            'Email = :Email,'+
+            'NomeMae = :NomeMae,' +
+            'NomePai = :NomePai,' +
+            'where (IDCliente = :IDCliente)');
+
+    parameters.ParamByName('Nome').Value := iCliente.Nome;
+    parameters.ParamByName('Documento').Value := iCliente.Documento;
+    parameters.ParamByName('Documento2').Value := iCliente.Documento2;
+    parameters.ParamByName('Telefone').Value   := iCliente.Telefone;
+    parameters.ParamByName('Celular').Value    := iCliente.Celular;
+    parameters.ParamByName('Email').Value      := iCliente.Email;
+    parameters.ParamByName('NomeMae').Value    := iCliente.NomeMae;
+    parameters.ParamByName('NomePai').Value    := iCliente.NomePai;
+  try
+      ExecSQL();
+      Result := True;
+      except on E: Exception do
+      begin
+        sErro := 'Ocorreu um erro ao atualizar os dados do cliente!' + sLineBreak + E.Message;
+        Result := False;
+      end;
+
+    end;
+end;
+
+
+  end;
+
+function TdmClientes.CarregarCliente(iCliente: TClienteAbstract): Boolean;
+var
+  iA : Integer;
+begin
+  qrCliente.Open;
+  with qrCliente,iCliente do
+    begin
+      SQL.Clear;
+      SQL.Add('select IDCLIENTE, NOME, DOCUMENTO,DOCUMENTO2, TELEFONE, CELULAR,' +
+              'EMAIL, NOMEMAE, NOMEPAI FROM CLIENTES order by nome');
+
+      open;
+      while not qrCliente.Eof do
+      begin
+        iCliente.IDCliente  := fields.FieldByName('IDCLIENTE').AsInteger;
+        iCliente.Nome       := fields.FieldByName('nome').AsString;
+        iCliente.Documento  := fields.FieldByName('DOCUMENTO').AsString;
+        iCliente.Documento2 := fields.FieldByName('DOCUMENTO2').AsString;
+        iCliente.Telefone   := fields.FieldByName('TELEFONE').AsString;
+        iCliente.Celular    := fields.FieldByName('CELULAR').AsString;
+        iCliente.Email      := fields.FieldByName('EMAIL').AsString;
+        iCliente.NomeMae    := fields.FieldByName('NOMEMAE').AsString;
+        iCliente.NomePai    := fields.FieldByName('NOMEPAI').AsString;
+        next;
+      end;
+
+      try
+        ExecSQL();
+        Result := True;
+        except on E: exception do
+      begin
+        Result := False;
+      end;
+
+    end;
+    end;
+end;
+
+procedure TdmClientes.PesquisarCliente(iNome: String);
+begin
+  if cdsPesquisar.Active then
+    cdsPesquisar.Close;
+  cdsPesquisar.ParamByName('pNome').AsString := '%' + iNome  + '%';
+  cdsPesquisar.Open;
+  cdsPesquisar.First;
+
+end;
+
+procedure TdmClientes.CarregarClientePesquisa(iCliente: TClienteAbstract;
+  iCodigo: Integer);
+var
+  sqlCliente: TADODATASET;
+begin
+  sqlCliente := TADODATASET.Create(NIL);
+  try
+    with sqlCliente do
+    begin
+      Connection := dmConexao.sqlConexao;
+      commandText := 'select * from Clientes where (IDCliente = ' + inttostr(iCodigo) + ')';
+      open;
+
+
+      iCliente.IdCliente := FieldByname('IDCLIENTE').AsInteger;
+      iCliente.Nome      := FieldByname('NOME').AsString;
+      iCliente.Documento := FieldByname('DOCUMENTO').AsString;
+      iCliente.Documento2 := FieldByname('DOCUMENTO2').AsString;
+      iCliente.Telefone   := FieldByname('TELEFONE').AsString;
+      iCLIENTE.Celular    := FieldByname('CELULAR').AsString;
+      iCliente.Email      := FieldByname('EMAIL').AsString;
+      iCliente.NomeMae    := FieldByname('NOMEMAE').AsString;
+      iCliente.NomePai    := FieldByname('NOMEPAI').AsString;
+
+    end;
+
+  finally
+
+    FreeAndNil(sqlCliente);
+
+  end;
+
+end;
+
+function TdmClientes.ExcluirCliente(iCodigo: Integer;
+  out sErro: String): Boolean;
+begin
+  with qrCliente do
+  begin
+    SQL.Clear;
+    SQL.Add('delete from Clientes');
+    SQL.Add('where (IDCliente = :IDCliente)');
+
+    parameters[0].Value := iCodigo;
+    try
+      ExecSQL();
+      Result := True;
+      except on E: Exception do
+      begin
+        sErro := 'Ocorreu um erro ao excluir o cliente selecionado!' + sLineBreak + E.Message;
+        Result := False;
+      end;
+
+    end;
+  end;
+end;
+
+function TdmClientes.InserirRegistoCliente(iCliente: TClienteAbstract;
+  out sErro: String): Boolean;
+begin
+  with qrCliente do
+  begin
+    parameters.ParamByName('pNome').Value := iCliente.Nome;
+    parameters.ParamByName('pDocumento').Value  := iCliente.Documento;
+    parameters.ParamByName('pDocumento2').Value := iCliente.Documento2;
+    parameters.ParamByName('pTelefone').Value   := iCliente.Telefone;
+    parameters.ParamByName('pCelular').Value    := iCliente.Celular;
+    parameters.ParamByName('pEmail').Value      := iCliente.Email;
+    parameters.ParamByName('pNomeMae').Value    := iCliente.NomeMae;
+    parameters.ParamByName('pNomePai').Value    := iCliente.NomePai;
+  try
+    execSQL;
+    Result := True;
+    except
+      on E: Exception do
+      begin
+        sErro := 'Ocorreu um erro ao gravar dados do cliente!' + sLineBreak + E.Message;
+        Result := False;
+        end;
+
+     end;
+      qrCliente.Close;
+     end;
+
+  end;
+
+end.
