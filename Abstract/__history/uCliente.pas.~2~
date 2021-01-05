@@ -1,0 +1,84 @@
+unit uCliente;
+
+interface
+
+
+type
+
+  Cliente = Class
+    private
+      FNomePai: String;
+      FEmail: String;
+      FDocumento2: String;
+      FFNome: string;
+      FDocumento: String;
+      FNomeMae: String;
+      FTelefone: String;
+      FCelular: String;
+      procedure SetCelular(const Value: String);
+      procedure SetDocumento(const Value: String);
+      procedure SetDocumento2(const Value: String);
+      procedure SetEmail(const Value: String);
+      procedure SetFNome(const Value: string);
+      procedure SetNomeMae(const Value: String);
+      procedure SetNomePai(const Value: String);
+      procedure SetTelefone(const Value: String);
+
+    public
+      property FNome: string read FFNome write SetFNome;
+      property Documento: String read FDocumento write SetDocumento;
+      property Documento2: String read FDocumento2 write SetDocumento2;
+      property Telefone: String read FTelefone write SetTelefone;
+      property Celular: String read FCelular write SetCelular;
+      property Email: String read FEmail write SetEmail;
+      property NomeMae: String read FNomeMae write SetNomeMae;
+      property NomePai: String read FNomePai write SetNomePai;
+
+  End;
+
+
+implementation
+
+{ Cliente }
+
+procedure Cliente.SetCelular(const Value: String);
+begin
+  FCelular := Value;
+end;
+
+procedure Cliente.SetDocumento(const Value: String);
+begin
+  FDocumento := Value;
+end;
+
+procedure Cliente.SetDocumento2(const Value: String);
+begin
+  FDocumento2 := Value;
+end;
+
+procedure Cliente.SetEmail(const Value: String);
+begin
+  FEmail := Value;
+end;
+
+procedure Cliente.SetFNome(const Value: string);
+begin
+  FFNome := Value;
+end;
+
+procedure Cliente.SetNomeMae(const Value: String);
+begin
+  FNomeMae := Value;
+end;
+
+procedure Cliente.SetNomePai(const Value: String);
+begin
+  FNomePai := Value;
+end;
+
+procedure Cliente.SetTelefone(const Value: String);
+begin
+  FTelefone := Value;
+end;
+
+end.
