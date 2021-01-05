@@ -1,0 +1,61 @@
+unit uControllerVenda;
+
+interface
+
+uses
+  uAbstractVendas;
+type
+  TControllerVenda = class (TAbstractVendas)
+    public
+      procedure CarregarCliente(iVendas: TAbstractVendas; iDCliente: Integer);
+      procedure CarregarProduto(iVendas: TAbstractVendas; iDProduto: Integer);
+      procedure PesquisarVendas(iNome: String);
+      procedure CarregarVendasPesquisa(iVendas: TAbstractVendas; iCodigo: Integer);
+      function InserirVendas(iVendas: TAbstractVendas; out sErro: string): Boolean;
+      function ExcluirVendas(iCodigo: Integer; out sErro: String): Boolean;
+
+  end;
+
+implementation
+
+uses
+  udmVendas;
+
+{ TControllerVenda }
+
+procedure TControllerVenda.CarregarVendasPesquisa(iVendas: TAbstractVendas;
+  iCodigo: Integer);
+begin
+  dmVendas.CarregarVendasPesquisa(iVendas,icodigo);
+end;
+
+function TControllerVenda.ExcluirVendas(iCodigo: Integer;
+  out sErro: String): Boolean;
+begin
+  Result := dmVendas.ExcluirVendas(iCodigo,sErro);
+end;
+
+function TControllerVenda.InserirVendas(iVendas: TAbstractVendas;
+  out sErro: string): Boolean;
+begin
+  Result := dmVendas.InserirVendas(iVendas,sErro)
+end;
+
+procedure TControllerVenda.CarregarCliente(iVendas: TAbstractVendas;
+  iDCliente: Integer);
+begin
+  dmVendas.CarregarCliente(iVendas,iDCliente);
+end;
+
+procedure TControllerVenda.CarregarProduto(iVendas: TAbstractVendas;
+  iDProduto: Integer);
+begin
+  dmVendas.CarregarProduto(iVendas,IDProduto);
+end;
+
+procedure TControllerVenda.PesquisarVendas(iNome: String);
+begin
+  dmVendas.PesquisarVendas(iNome);
+end;
+
+end.

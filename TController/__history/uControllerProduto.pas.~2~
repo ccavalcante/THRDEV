@@ -1,0 +1,35 @@
+unit uControllerProduto;
+
+interface
+
+uses
+  uAbstractProduto;
+ type
+  TControllerProduto = Class (TAbstractProdutos)
+  private
+  public
+    procedure PesquisarProduto(iDescricao: String);
+    procedure CarregarProdutoPesquisa(iProduto: TAbstractProdutos; iCodigo: Integer);
+
+ End;
+
+
+implementation
+
+uses
+  udmProdutos, System.SysUtils;
+
+{ TControllerProduto }
+
+procedure TControllerProduto.CarregarProdutoPesquisa(
+  iProduto: TAbstractProdutos; iCodigo: Integer);
+begin
+  Result :=
+end;
+
+procedure TControllerProduto.PesquisarProduto(iDescricao: String);
+begin
+  dmProdutos.PesquisarProduto(iDescricao);
+end;
+
+end.

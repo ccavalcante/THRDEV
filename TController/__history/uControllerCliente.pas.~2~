@@ -1,0 +1,13 @@
+unit uControllerCliente;
+
+interface
+type
+
+  TControllerCliente = Class
+    private
+    public
+  End;
+
+implementation
+
+end.
